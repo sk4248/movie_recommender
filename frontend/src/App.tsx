@@ -15,7 +15,7 @@ export default function App() {
         .map((s) => s.trim())
         .filter(Boolean);
 
-      const res = await fetch("http://127.0.0.1:8000/recommend", {
+      const res = await fetch("http://localhost:8000/recommend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ movies, n: 10 }),
