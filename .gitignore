@@ -1,0 +1,106 @@
+# Python
+*.py[cod]
+*$py.class
+__pycache__/
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.whl
+*.manifest
+*.spec
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+.virtualenv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing
+.coverage
+.pytest_cache/
+.tox/
+htmlcov/
+.hypothesis/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Data files (processed data, keep raw data)
+backend/data/processed/*
+backend/data/*.zip
+*.csv.gz
+*.parquet
+
+# Frontend (node_modules already handled by frontend/.gitignore)
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# Model artifacts and outputs
+*.pkl
+*.pickle
+*.h5
+*.pb
+*.onnx
+models/checkpoints/
+models/saved_models/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~.nib
