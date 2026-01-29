@@ -18,7 +18,7 @@ export default function App() {
       const res = await fetch("http://localhost:8000/recommend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ movies, n: 10 }),
+        body: JSON.stringify({ movies, n: 10, method: "item_cf" }),
       });
 
       const data = await res.json();

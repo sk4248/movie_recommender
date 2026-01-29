@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List
+from typing import List, Literal, Optional
 from pathlib import Path
 
 from src.datasets.movielens_100k import load_movielens_100k
-
+from src.models.item_cf import ItemItemCF
 from src.models.title_match import find_best_title_matches
 from src.models.content_based import recommend_by_genre_similarity
 
@@ -27,14 +27,17 @@ app.add_middleware(
 class RecommendRequest(BaseModel):
     movies: List[str]
     n: int = 10
+    method: Literal["content", "item_cf"] = "item_cf"
 
 
 DATA = None
+CF = None
 
 @app.on_event('startup')
 def startup():
-    global DATA
+    global DATA, CF
     DATA = load_movielens_100k(Path('data/raw'))
+    CF = ItemItemCF.fit(DATA.ratings, DATA.movies)
 
 @app.get("/health")
 def health():
@@ -67,23 +70,33 @@ def recommend(req: RecommendRequest):
             "note": "No seed titles matched the dataset. Try adding year, e.g. 'Toy Story (1995)'.",
         }
 
-    # 2) Recommend via content similarity
-    recs = recommend_by_genre_similarity(
-        movies=DATA.movies,
-        ratings=DATA.ratings,
-        seed_movie_ids=seed_movie_ids,
-        n=req.n,
-        per_seed_k=300,
-        exclude_movie_ids=set(seed_movie_ids),
-    )
+    # 2) Recommend via selected method
+    if req.method == "content":
+        recs = recommend_by_genre_similarity(
+            movies=DATA.movies,
+            ratings=DATA.ratings,
+            seed_movie_ids=seed_movie_ids,
+            n=req.n,
+            per_seed_k=300,
+            exclude_movie_ids=set(seed_movie_ids),
+        )
+        recommendations = [
+            {"movie_id": r.movie_id, "title": r.title, "score": r.score, "explanation": r.explanation}
+            for r in recs
+        ]
+    else:
+        recommendations = CF.recommend(
+            seed_movie_ids=seed_movie_ids,
+            n=req.n,
+            per_seed_k=300,
+            exclude_movie_ids=set(seed_movie_ids),
+        )
 
     return {
         "seeds": req.movies,
         "resolved": resolved,
         "unresolved": unresolved,
-        "recommendations": [
-            {"movie_id": r.movie_id, "title": r.title, "score": r.score, "explanation": r.explanation}
-            for r in recs
-        ],
+        "method": req.method,
+        "recommendations": recommendations,
     }
 
